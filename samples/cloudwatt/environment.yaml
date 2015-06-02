@@ -1,0 +1,22 @@
+---
+defaults:
+  instance:
+    image: Ubuntu 14.04
+    flavor: t1.cw.tiny
+    network: devstack
+    username: cloud
+    external: public
+networks:
+  devstack:
+    cidr: 192.168.0.0/24
+    router: True
+instances:
+  instance1:
+    networks:
+    - devstack
+    provisioners:
+    - devstack
+provisioners:
+  devstack:
+    type: shell
+    path: script.sh

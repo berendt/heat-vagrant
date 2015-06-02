@@ -1,0 +1,21 @@
+---
+defaults:
+  instance:
+    image: GNU/Linux Ubuntu Server 14.04 LTS Trusty Tahr [Daily Build 20150614] x64 RAW
+    flavor: e1standard.x4
+    network: devstack
+    username: ec2-user
+networks:
+  devstack:
+    cidr: 192.168.0.0/24
+    external: PublicNetwork
+instances:
+  instance1:
+    networks:
+    - devstack
+    provisioners:
+    - devstack
+provisioners:
+  devstack:
+    type: shell
+    path: devstack.sh

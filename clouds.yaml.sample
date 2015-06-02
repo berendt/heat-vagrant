@@ -1,0 +1,8 @@
+clouds:
+  phoobe:
+    auth:
+      auth_url: https://api.your-cloud.com/v2.0
+      username: your_username
+      password: your_password
+      project_name: your_projectname
+    region_name: your_regionname

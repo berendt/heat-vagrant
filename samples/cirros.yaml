@@ -1,0 +1,16 @@
+---
+defaults:
+  instance:
+    image: Cirros 0.3.3
+    flavor: e1standard.x1
+    network: network1
+    username: cirros
+networks:
+  network1:
+    cidr: 192.168.0.0/24
+    external: PublicNetwork
+instances:
+  instance1:
+    name: instance1
+  instance2:
+    name: instance2

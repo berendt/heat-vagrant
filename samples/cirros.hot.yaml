@@ -1,0 +1,101 @@
+description: Phoobe generated heat template
+heat_template_version: '2013-05-23'
+outputs:
+  floatingip_instance1:
+    description: Floating IP address of instance instance1
+    value: { get_attr: [ floatingip_instance1, floating_ip_address ] }
+  floatingip_instance2:
+    description: Floating IP address of instance instance2
+    value: { get_attr: [ floatingip_instance2, floating_ip_address ] }
+  private_ssh_key:
+    description: Private SSH key
+    value: { get_attr: [ keypair, private_key ] }
+parameters:
+  external_network:
+    description: UUID of the external network
+    type: string
+resources:
+  floatingip_instance1:
+    properties:
+      floating_network_id: { get_param: external_network }
+      port_id: { get_resource: port_instance1_network1}
+    type: OS::Neutron::FloatingIP
+  floatingip_instance2:
+    properties:
+      floating_network_id: { get_param: external_network }
+      port_id: { get_resource: port_instance2_network1}
+    type: OS::Neutron::FloatingIP
+  instance1:
+    properties:
+      flavor: e1standard.x1
+      image: Cirros 0.3.3
+      key_name: { get_resource: keypair }
+      name: phoobe_instance1
+      networks:
+      - port: { get_resource: port_instance1_network1 }
+    type: OS::Nova::Server
+  instance2:
+    properties:
+      flavor: e1standard.x1
+      image: Cirros 0.3.3
+      key_name: { get_resource: keypair }
+      name: phoobe_instance2
+      networks:
+      - port: { get_resource: port_instance2_network1 }
+    type: OS::Nova::Server
+  keypair:
+    properties:
+      name: phoobe_keypair
+      save_private_key: true
+    type: OS::Nova::KeyPair
+  net_network1:
+    properties:
+      name: phoobe_network1
+    type: OS::Neutron::Net
+  port_instance1_network1:
+    properties:
+      fixed_ips:
+      - subnet_id: { get_resource: subnet_network1 }
+      name: phoobe_port_instance1_network1
+      network_id: { get_resource: net_network1 }
+      security_groups:
+      - default
+      - {get_resource: security_group}
+    type: OS::Neutron::Port
+  port_instance2_network1:
+    properties:
+      fixed_ips:
+      - subnet_id: { get_resource: subnet_network1 }
+      name: phoobe_port_instance2_network1
+      network_id: { get_resource: net_network1 }
+      security_groups:
+      - default
+      - {get_resource: security_group}
+    type: OS::Neutron::Port
+  router:
+    properties:
+      external_gateway_info:
+        network: { get_param: external_network }
+      name: phoobe_router
+    type: OS::Neutron::Router
+  router_interface_subnet_network1:
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: subnet_network1 }
+    type: OS::Neutron::RouterInterface
+  security_group:
+    properties:
+      description: Allow SSH and ICMP
+      name: phoobe_security_group
+      rules:
+      - protocol: icmp
+      - port_range_max: 22
+        port_range_min: 22
+        protocol: tcp
+    type: OS::Neutron::SecurityGroup
+  subnet_network1:
+    properties:
+      cidr: 192.168.0.0/24
+      name: phoobe_subnet_network1
+      network_id: { get_resource: net_network1 }
+    type: OS::Neutron::Subnet
